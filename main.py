@@ -16,8 +16,10 @@ def _load_players() -> List[Dict[str, Any]]:
     if isinstance(data, list):
         return data
 
-    if isinstance(data, dict) and isinstance(data.get("players"), list):
-        return data["players"]
+    if isinstance(data, dict):
+        players = data.get("players")
+        if isinstance(players, list):
+            return players
 
     return []
 
