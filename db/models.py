@@ -1,6 +1,5 @@
 # db/models.py
 from django.db import models
-from django.utils import timezone
 
 
 class Race(models.Model):
@@ -39,7 +38,7 @@ class Player(models.Model):
         null=True,
         blank=True,
     )
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.nickname
