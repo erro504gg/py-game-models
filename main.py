@@ -60,27 +60,22 @@ def _load_players_data() -> List[Dict[str, Any]]:
 
     if isinstance(data, list):
         return data
-
     if isinstance(data, dict):
         players = data.get("players")
         return players if isinstance(players, list) else []
-
     return []
 
 
 def _race_from_player(player_data: Dict[str, Any]) -> Dict[str, Any]:
     race_raw: Union[str, Dict[str, Any], None] = player_data.get("race")
-
     if isinstance(race_raw, str):
         return {"name": race_raw, "description": "", "skills": []}
-
     if isinstance(race_raw, dict):
         return {
             "name": race_raw.get("name", ""),
             "description": race_raw.get("description", "") or "",
             "skills": race_raw.get("skills") or [],
         }
-
     return {
         "name": player_data.get("race_name", "") or "",
         "description": player_data.get("race_description", "") or "",
@@ -132,7 +127,6 @@ def _get_or_create_guild(player_data: Dict[str, Any]) -> Optional[Guild]:
     guild_name = player_data.get("guild_name")
     if not guild_name:
         return None
-
     guild_desc = player_data.get("guild_description")
     guild, _ = Guild.objects.get_or_create(
         name=guild_name,
@@ -145,13 +139,11 @@ def _get_or_create_guild(player_data: Dict[str, Any]) -> Optional[Guild]:
 
 
 def _skills_from_player(player_data: Dict[str, Any]) -> List[Any]:
-    skills = player_data.get("skills")
-    if isinstance(skills, list):
-        return skills
-
+    if isinstance(player_data.get("skills"), list):
+        return player_data["skills"]
     race_data = _race_from_player(player_data)
-    race_skills = race_data.get("skills")
-    return race_skills if isinstance(race_skills, list) else []
+    skills = race_data.get("skills")
+    return skills if isinstance(skills, list) else []
 
 
 def _create_skills_for_race(player_data: Dict[str, Any], race: Race) -> None:
@@ -159,11 +151,9 @@ def _create_skills_for_race(player_data: Dict[str, Any], race: Race) -> None:
         if isinstance(skill_data, str):
             name = skill_data
             bonus = ""
-        elif isinstance(skill_data, dict):
-            name = skill_data.get("name", "") or ""
-            bonus = skill_data.get("bonus", "") or ""
         else:
-            continue
+            name = (skill_data or {}).get("name", "") if isinstance(skill_data, dict) else ""
+            bonus = (skill_data or {}).get("bonus", "") if isinstance(skill_data, dict) else ""
 
         if not name:
             continue
