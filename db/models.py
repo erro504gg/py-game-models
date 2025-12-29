@@ -6,12 +6,6 @@ class Race(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True)
 
-    class Meta:
-        app_label = "db"
-
-    def __str__(self) -> str:
-        return self.name
-
 
 class Skill(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -22,22 +16,10 @@ class Skill(models.Model):
         related_name="skills",
     )
 
-    class Meta:
-        app_label = "db"
-
-    def __str__(self) -> str:
-        return self.name
-
 
 class Guild(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True)
-
-    class Meta:
-        app_label = "db"
-
-    def __str__(self) -> str:
-        return self.name
 
 
 class Player(models.Model):
@@ -57,9 +39,3 @@ class Player(models.Model):
         related_name="players",
     )
     created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        app_label = "db"
-
-    def __str__(self) -> str:
-        return self.nickname
