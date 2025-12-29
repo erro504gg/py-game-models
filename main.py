@@ -24,7 +24,9 @@ def _load_players() -> List[Dict[str, Any]]:
     return []
 
 
-def _parse_race(player: Dict[str, Any]) -> Tuple[str, str, List[Dict[str, str]]]:
+def _parse_race(
+    player: Dict[str, Any],
+) -> Tuple[str, str, List[Dict[str, str]]]:
     race_raw: Union[str, Dict[str, Any], None] = player.get("race")
 
     if isinstance(race_raw, str):
@@ -34,12 +36,14 @@ def _parse_race(player: Dict[str, Any]) -> Tuple[str, str, List[Dict[str, str]]]
         name = str(race_raw.get("name", "") or "")
         desc = str(race_raw.get("description", "") or "")
         skills = race_raw.get("skills") or []
-        return name, desc, skills if isinstance(skills, list) else []
+        skills_list = skills if isinstance(skills, list) else []
+        return name, desc, skills_list
 
     name = str(player.get("race_name", "") or "")
     desc = str(player.get("race_description", "") or "")
     skills = player.get("race_skills") or []
-    return name, desc, skills if isinstance(skills, list) else []
+    skills_list = skills if isinstance(skills, list) else []
+    return name, desc, skills_list
 
 
 def _get_or_create_guild(player: Dict[str, Any]) -> Optional[Guild]:
