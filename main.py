@@ -3,9 +3,56 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from django.db import connection
+
 from db.models import Guild, Player, Race, Skill
 
 __all__ = ["main", "Race", "Skill", "Player", "Guild"]
+
+
+def _ensure_tables() -> None:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS "db_race" (
+                "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+                "name" varchar(255) NOT NULL UNIQUE,
+                "description" text NOT NULL
+            )
+            """
+        )
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS "db_guild" (
+                "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+                "name" varchar(255) NOT NULL UNIQUE,
+                "description" text NULL
+            )
+            """
+        )
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS "db_skill" (
+                "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+                "name" varchar(255) NOT NULL UNIQUE,
+                "bonus" varchar(255) NOT NULL,
+                "race_id" integer NOT NULL
+            )
+            """
+        )
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS "db_player" (
+                "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+                "nickname" varchar(255) NOT NULL UNIQUE,
+                "email" varchar(255) NOT NULL,
+                "bio" varchar(255) NOT NULL,
+                "race_id" integer NOT NULL,
+                "guild_id" integer NULL,
+                "created_at" datetime NOT NULL
+            )
+            """
+        )
 
 
 def _load_players() -> List[Dict[str, Any]]:
@@ -90,6 +137,8 @@ def _create_skills(race: Race, skills: List[Any]) -> None:
 
 
 def main() -> None:
+    _ensure_tables()
+
     for player in _load_players():
         race_name, race_desc, race_skills = _parse_race(player)
         race, _ = Race.objects.get_or_create(
