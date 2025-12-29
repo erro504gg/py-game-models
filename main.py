@@ -55,10 +55,23 @@ def _ensure_tables() -> None:
         )
 
 
+def _players_json_paths() -> List[Path]:
+    here = Path(__file__).resolve().parent
+    return [
+        here / "players.json",
+        here / "db" / "players.json",
+        Path.cwd() / "players.json",
+        Path.cwd() / "db" / "players.json",
+    ]
+
+
 def _load_players() -> List[Dict[str, Any]]:
-    path = Path(__file__).resolve().parent / "players.json"
-    with path.open("r", encoding="utf-8") as f:
-        data = json.load(f)
+    data: Any = None
+    for path in _players_json_paths():
+        if path.exists():
+            with path.open("r", encoding="utf-8") as f:
+                data = json.load(f)
+            break
 
     if isinstance(data, list):
         return data
